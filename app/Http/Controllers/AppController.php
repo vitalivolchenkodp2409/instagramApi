@@ -8,6 +8,8 @@ use App\Instagram;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AppController extends Controller
 {
@@ -20,26 +22,23 @@ class AppController extends Controller
             'base_uri' => 'https://api.instagram.com/v1/',
         ]);
     }
-
+    
     public function redirectToInstagramProvider()
     {
-        $res = Socialite::with('instagram')->scopes(["basic likes comments",
-            "public_content"])
-            ->redirectUrl('http://localhost:8000/instagram/callback');
-
-        return $res->redirect();
-        // $res = Socialite::driver('instagram')->redirect();
-        // dd($res);
+        $res = Socialite::with('instagram')->stateless()
+                ->scopes(["basic","public_content"]);
+        return $res->redirect();        
     }
 
     public function handleProviderInstagramCallback()
-    {        
-        $user = Socialite::driver('instagram')->stateless()
-        ->redirectUrl('http://localhost:8000/instagram/callback')
+    {    
+        Log::info('handleProviderInstagramCallback123:'.json_encode(request()->all()));
+        //dd(request());
+        $user = Socialite::driver('instagram')
+        ->stateless()->scopes(["basic likes comments",
+        "public_content"])         
         ->user();
-        //dd($user);
-        //dd(request()->all());
-        
+            
         $this->access_token = $user->token;
         $instaId = $user->id;
         //dd($instaId);
@@ -75,13 +74,12 @@ class AppController extends Controller
                 'access_token' => $this->access_token,
                 'insta_name' => $instaName
             ]);            
-        }  
+        }        
         
-        //$insta = Instagram::where('user_id', $userId)->orderBy('created_at')->first();
         $insta = $User->instagram()->first();        
         //dd('asdasdasd',$insta);
         if ($insta == null){
-            echo 'qweqweqwe';
+            //echo 'qweqweqwe';
             //dd('asdasdasd',$insta);
             $insta = $User->instagram()->create([                                
                 'followers' => $followers,                
@@ -94,41 +92,47 @@ class AppController extends Controller
                 'l_image' => $lastImage
             ]);
             //dd('insta:',$insta);                    
-        } else {
-            
-            $insta = $insta->orderBy('created_at', 'desc')->first();
-            //dd('after', $insta);
-            $avgFollowers = $followers - $insta->followers;
-            $avgFollowing = $following - $insta->following;
-            $avgLikes = $sumLikes - $insta->likes;
-            $avgComments = $sumComments - $insta->comments;
-            $avgPosts = $posts - $insta->avg_post;
-            $avgEngagement = $egagement - $insta->avg_engagement;
-
-            //dd('in elseeee', $User->instagram);
-            $instagram = $User->instagram()->create([                             
-                'followers' => $followers,
-                'avg_followers' => $avgFollowers,
-                'following' => $following,
-                'avg_following' => $avgFollowing,
-                'likes' => $sumLikes,
-                'avg_likes' => $avgLikes,
-                'comments' => $sumComments,
-                'avg_comments' => $avgComments,
-                'post' => $posts,
-                'avg_post' => $avgPosts,
-                'engagement' => $egagement,
-                'avg_engagement' => $avgEngagement,
-                'avatar' => $avatar,
-                'l_image' => $lastImage
-            ]);            
-            dd('in else', $instagram);
+        } else {                     
+            $insta = $insta->orderBy('created_at', 'desc')->first();   
+            // get created_at insta         
+            $created_at = $insta->created_at->format('Y-m-d');
+            //dd($created_at);            
+            // get data now
+            $mytime = Carbon::now()->format('Y-m-d');
+            //dd('qq',$mytime);
+            if($created_at != $mytime){
+                $avgFollowers = $followers - $insta->followers;
+                $avgFollowing = $following - $insta->following;
+                $avgLikes = $sumLikes - $insta->likes;
+                $avgComments = $sumComments - $insta->comments;
+                $avgPosts = $posts - $insta->post;
+                $avgEngagement = $egagement - $insta->engagement;
+                //dd('in elseeee', $User->instagram);
+                $instagram = $User->instagram()->create([                             
+                    'followers' => $followers,
+                    'avg_followers' => $avgFollowers,
+                    'following' => $following,
+                    'avg_following' => $avgFollowing,
+                    'likes' => $sumLikes,
+                    'avg_likes' => $avgLikes,
+                    'comments' => $sumComments,
+                    'avg_comments' => $avgComments,
+                    'post' => $posts,
+                    'avg_post' => $avgPosts,
+                    'engagement' => $egagement,
+                    'avg_engagement' => $avgEngagement,
+                    'avatar' => $avatar,
+                    'l_image' => $lastImage
+                ]); 
+            }           
+            //dd('in else', $instagram);
         }
-        //dd($instagram);
-        //return $instagram->id; 
+        //dd($instagram->id);
+        //return $instagram->id;         
     }
 
-    public function getUser(){
+    public function getUser()
+    {
         if($this->access_token){
             $response = $this->client->request('GET', 'users/self/', [
                 'query' => [
@@ -140,7 +144,8 @@ class AppController extends Controller
         return [];
     }
  
-    public function getPosts(){
+    public function getPosts()
+    {
         if($this->access_token){
             $response = $this->client->request('GET', 'users/self/media/recent/', [
                 'query' => [
@@ -150,6 +155,11 @@ class AppController extends Controller
             return $response->getBody()->getContents();
         }
         return [];
+    }
+
+    public function test()
+    {
+        app('App\Classes\InstagramAPI')->saveDataUserInsta();
     }
     
 }
