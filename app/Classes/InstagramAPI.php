@@ -74,10 +74,7 @@ class InstagramAPI
         }           
 
       }
-      //dd($instagram->id);
-      //return $instagram->id; 
-      //   token =  9508260995.6842572.53976e18043f4dceba9fb0cbf6e14de4
-      // last 9508260995.6842572.285ece75d80e411e93b3feee9f2534bb
+      
     }      
               
   }
