@@ -73,7 +73,9 @@ class AppController extends Controller
                 'access_token' => $this->access_token,
                 'insta_name' => $instaName
             ]);            
-        }        
+        }
+        
+        $userNameInsta = $User->insta_name;
         
         $insta = $User->instagram()->first();        
         
@@ -94,7 +96,7 @@ class AppController extends Controller
             $insta = $insta->orderBy('created_at', 'desc')->first();   
             // get created_at insta         
             $created_at = $insta->created_at->format('Y-m-d');
-            //dd($created_at);            
+                        
             // get data now
             $mytime = Carbon::now()->format('Y-m-d');
             
@@ -126,8 +128,9 @@ class AppController extends Controller
             
         }
         $dataInsta = $User->instagram()->orderBy('created_at', 'desc')->take(30)->get();
-
-        return response()->json($dataInsta);                 
+        //return response()->json($dataInsta);  
+        return redirect("http://test1.devpuzzle.com?name=$userNameInsta");
+        //->header('User-Name-Insta', $userNameInsta);             
     }
 
     public function getUserInstagram()
@@ -156,11 +159,15 @@ class AppController extends Controller
         return [];
     }
 
-    public function getUserFromDB(Request $request)
-    {        
-        $name = $request->input('name');
-        
-        $user = User::where('insta_name', $name)->first();
+    public function getUserFromDB(Request $request, $insta_name)
+    { 
+        $instaName = $insta_name;
+
+        if(!$instaName) {   
+            $instaName = $request->input('name');
+        }        
+                
+        $user = User::where('insta_name', $instaName)->first();
                 
         $insta_infa = $user->instagram()->orderBy('created_at', 'desc')->first();        
         

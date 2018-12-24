@@ -9,5 +9,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/instagram', 'AppController@redirectToInstagramProvider');
 Route::get('/instagram/callback', 'AppController@handleProviderInstagramCallback');
 
-Route::post('/instagram/{user}', 'AppController@getUserFromDB');
-//Route::get('/instagram/{user}', 'AppController@getUserFromDB');
+Route::get('/instagram/{user}', 'AppController@getUserFromDB');
+Route::post('/instagram/user', 'AppController@getUserFromDB');

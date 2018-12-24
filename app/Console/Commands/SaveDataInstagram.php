@@ -37,10 +37,7 @@ class SaveDataInstagram extends Command
      * @return mixed
      */
     public function handle()
-    {
-        //echo "whatever \n";
-        //app('App\Http\Controllers\AppController')->redirectToInstagramProvider();
-        app('App\Classes\InstagramAPI')->saveDataUserInsta();
-        //dd('asd');
+    {       
+        app('App\Classes\InstagramAPI')->saveDataUserInsta();        
     }
 }
