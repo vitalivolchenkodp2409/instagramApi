@@ -17,14 +17,14 @@ class InstagramAPI
       if($token !== null){
 
         $client = new Client(['base_uri' => 'https://api.instagram.com/v1/',]);
-        $dataUserInsta = json_decode($this->getUser($client, $token))->data;
+        $dataUserInsta = json_decode($this->getUserDataInstagram($client, $token))->data;
         $instaName = $dataUserInsta->username;
         $following = $dataUserInsta->counts->follows;
         $followers = $dataUserInsta->counts->followed_by;
         $posts = $dataUserInsta->counts->media;
         $avatar = $dataUserInsta->profile_picture;        
   
-        $dataUserMediaInsta = json_decode($this->getPosts($client, $token))->data;
+        $dataUserMediaInsta = json_decode($this->getPostsInstagram($client, $token))->data;
   
         $sumLikes = 0;
         $sumComments = 0;
@@ -79,7 +79,7 @@ class InstagramAPI
               
   }
 
-  public function getUser($client, $token)
+  public function getUserDataInstagram($client, $token)
   {
       if($token){
           $response = $client->request('GET', 'users/self/', [
@@ -92,7 +92,7 @@ class InstagramAPI
       return [];
   }
 
-  public function getPosts($client, $token)
+  public function getPostsInstagram($client, $token)
   {
       if($token){
           $response = $client->request('GET', 'users/self/media/recent/', [
