@@ -150,7 +150,7 @@ class AppController extends Controller
         
     }
 
-    public function getLastDataUserFromDB(Request $request, $insta_name)
+    public function getLastDataUserFromDB(Request $request, $insta_name = null)
     { 
         $instaName = $insta_name;
 
