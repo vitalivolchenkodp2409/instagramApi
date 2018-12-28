@@ -11,5 +11,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/instagram', 'AppController@getUserFromInsta');
 
-Route::get('/instagram/data/{user}', 'AppController@getDataUserFromDB');
-Route::post('/instagram/data/user', 'AppController@getDataUserFromDB');
+Route::get('/instagram/data/{user}', 'AppController@getLastDataUserFromDB');
+Route::post('/instagram/data/user', 'AppController@getLastDataUserFromDB');
+
+Route::get('/instagram/dayScriptRun', 'AppController@saveDataUserInsta');
