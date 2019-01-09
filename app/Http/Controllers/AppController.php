@@ -66,8 +66,6 @@ class AppController extends Controller
         $User->access_token = $this->access_token;
         $User->save();
         
-        $userNameInsta = $User->insta_name;
-        
         $insta = $User->instagram()->first();        
         
         if ($insta == null){
@@ -84,7 +82,7 @@ class AppController extends Controller
             ]);
                                
         } else {                     
-            $insta = $insta->orderBy('created_at', 'desc')->first();   
+            $insta = $User->instagram()->orderBy('created_at', 'desc')->first();   
             // get created_at insta         
             $created_at = $insta->created_at->format('Y-m-d');                        
             // get data now
