@@ -11,6 +11,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/instagram', 'AppController@getUserFromInsta');
 
+Route::get('/instagram/users', 'AppController@getUsersFromDB');
+
 Route::get('/instagram/data/{user}', 'AppController@getLastDataUserFromDB');
 Route::post('/instagram/data/user', 'AppController@getLastDataUserFromDB');
 

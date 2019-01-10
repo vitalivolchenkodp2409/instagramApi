@@ -163,6 +163,22 @@ class AppController extends Controller
         return response()->json(['dataInsta' => $insta_infa, 'instagramName' => $instaName]);
     }
 
+    public function getUsersFromDB()
+    {
+        $data = array();
+        $users = User::all();        
+        foreach($users as $key => $user){
+            $instaName = $user->insta_name;
+            $dataInsta = $user->instagram()->orderBy('created_at', 'desc')->first();
+            $followers = $dataInsta->followers;
+            $engagement  =  $dataInsta->engagement;      
+            $avatar = $dataInsta->avatar; 
+            //$data[$key] = ['instaName' => $instaName, 'dataInsta' => $dataInsta];
+            $data[$key] = ['instaName' => $instaName, 'followers' => $followers, 'engagement' => $engagement, 'avatar' => $avatar];
+        }
+        return response()->json(['dataInsta' => $data]);
+    }
+
     public function saveDataUserInsta()
     {
         $users = User::all();
